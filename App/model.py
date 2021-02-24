@@ -27,17 +27,44 @@
 
 import config as cf
 from DISClib.ADT import list as lt
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import shellsort as shell
+from DISClib.Algorithms.Sorting import selectionsort as sel
+from DISClib.Algorithms.Sorting import insertionsort as ins
+import time
 assert cf
 
 """
-Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
+Se define la estructura de un catálogo de videos. El catálogo
+tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
 """
 
 # Construccion de modelos
 
+
+def newCatalog(chosenType):
+
+    typeofList = "ARRAY_LIST"
+    if chosenType == 1:
+        typeofList = "LINKED_LIST"
+    catalog = {"videos": None, "categories": None}
+    catalog["videos"] = lt.newList(typeofList)
+    catalog["categories"] = lt.newList()
+
+    return catalog
+
+
 # Funciones para agregar informacion al catalogo
+
+
+def addVideo(catalog, video):
+    # Se adiciona el video a la lista de videos
+    lt.addLast(catalog['videos'], video)
+
+
+def addCategory(catalog, category):
+    # Se adiciona la categoria a la lista de categorias
+    lt.addLast(catalog['categories'], category)
 
 # Funciones para creacion de datos
 
@@ -46,3 +73,39 @@ los mismos.
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+
+
+def cmpVideosByViews(video1, video2):
+    """
+    Devuelve verdadero (True) si los 'views' de video1 son menores que
+    los del video2
+    Args:
+    video1: informacion del primer video que incluye su valor 'views'
+    video2: informacion del segundo video que incluye su valor 'views'
+    """
+    return (video1["views"] < video2["views"])
+
+
+def firstReq(catalog, country, category, data_size, algorithm):
+    "Completa el requerimiento 1"
+    data_sublist = lt.subList(catalog["videos"], 0, data_size)
+    data_sublist = data_sublist.copy()
+    for video in data_sublist["elements"]:
+        if video["country"] != country and video["category_id"] != category:
+            data_sublist["elements"].remove(video)
+    print(data_sublist["type"])
+    if algorithm == 0:
+        start_time = time.process_time()
+        sorted_list = sel.sort(data_sublist["elements"], cmpVideosByViews)
+        stop_time = time.process_time()
+    elif algorithm == 1:
+        start_time = time.process_time()
+        sorted_list = ins.sort(data_sublist["elements"], cmpVideosByViews)
+        stop_time = time.process_time()
+    elif algorithm == 2:
+        start_time = time.process_time()
+        sorted_list = shell.sort(data_sublist["elements"], cmpVideosByViews)
+        stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    #sorted_top_n = lt.subList(sorted_list, 0, n_videos)
+    return [sorted_top_n, start_time, stop_time]
